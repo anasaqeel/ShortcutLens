@@ -4,7 +4,7 @@ import AppKit
 // be explicitly `@MainActor`-isolated under Swift 6 strict concurrency,
 // while all real logic stays in separately testable types.
 @main
-enum CheatSheetApp {
+enum ShortcutLensApp {
     @MainActor
     static func main() {
         let app = NSApplication.shared

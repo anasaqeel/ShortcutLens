@@ -1,6 +1,6 @@
 import Testing
 import AppKit
-@testable import CheatSheet
+@testable import ShortcutLens
 
 @MainActor
 struct GlobalCommandHoldMonitorTests {

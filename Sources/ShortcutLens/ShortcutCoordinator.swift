@@ -11,7 +11,7 @@ import AppKit
 /// overlay back up unexpectedly.
 @MainActor
 final class ShortcutCoordinator {
-    private let overlay = CheatSheetWindowController()
+    private let overlay = ShortcutLensWindowController()
     private var readGeneration = UUID()
 
     func present(for app: NSRunningApplication) {

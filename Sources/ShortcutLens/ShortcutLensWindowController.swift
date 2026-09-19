@@ -3,7 +3,7 @@ import SwiftUI
 
 /// An `NSPanel` that can never take keyboard focus or activate the app.
 ///
-/// The cheat sheet is purely informational and transient — it must not steal
+/// The shortcut sheet is purely informational and transient — it must not steal
 /// focus from whatever the user was doing, must not appear in Cmd-Tab / the
 /// Dock, and must never be able to intercept keystrokes meant for the app
 /// underneath it.
@@ -19,36 +19,36 @@ private final class OverlayPanel: NSPanel {
 /// one — up to the usable screen area — instead of everything being crammed
 /// into a scroll view.
 @MainActor
-final class CheatSheetWindowController {
+final class ShortcutLensWindowController {
     /// Margin left between the sheet and the edges of the usable screen.
     private static let screenMargin: CGFloat = 20
 
     private var panel: OverlayPanel?
-    private var hostingView: NSHostingView<CheatSheetView>?
+    private var hostingView: NSHostingView<ShortcutLensView>?
 
     /// Shows the sheet immediately at its final size, so the 2-second wait
     /// isn't followed by another visible delay — and so the window never
     /// resizes or jumps once the shortcuts arrive.
     func showLoading(appName: String, appIcon: NSImage?) {
-        let view = CheatSheetView(appName: appName, appIcon: appIcon, plan: nil, state: .loading)
+        let view = ShortcutLensView(appName: appName, appIcon: appIcon, plan: nil, state: .loading)
         let screen = NSScreen.main ?? NSScreen.screens.first
-        present(view: view, contentSize: CheatSheetLayout.contentSize(available: Self.availableSize(for: screen)))
+        present(view: view, contentSize: ShortcutLensLayout.contentSize(available: Self.availableSize(for: screen)))
     }
 
     /// Replaces the sheet's content once shortcuts have been read. The window
     /// keeps the size it was shown at. If the user has already released
     /// Command, `hide()` will have torn the panel down and this is a no-op.
-    func update(appName: String, appIcon: NSImage?, groups: [ShortcutGroup], state: CheatSheetView.State) {
+    func update(appName: String, appIcon: NSImage?, groups: [ShortcutGroup], state: ShortcutLensView.State) {
         guard let panel else { return }
 
-        let plan: CheatSheetLayout.Plan?
+        let plan: ShortcutLensLayout.Plan?
         if state == .loaded && !groups.isEmpty {
-            plan = CheatSheetLayout.plan(groups: groups, available: Self.availableSize(for: panel.screen))
+            plan = ShortcutLensLayout.plan(groups: groups, available: Self.availableSize(for: panel.screen))
         } else {
             plan = nil
         }
 
-        hostingView?.rootView = CheatSheetView(
+        hostingView?.rootView = ShortcutLensView(
             appName: appName,
             appIcon: appIcon,
             plan: plan,
@@ -84,7 +84,7 @@ final class CheatSheetWindowController {
         )
     }
 
-    private func present(view: CheatSheetView, contentSize: CGSize) {
+    private func present(view: ShortcutLensView, contentSize: CGSize) {
         hide() // never leave a previous panel orphaned on screen
 
         let screen = NSScreen.main ?? NSScreen.screens.first

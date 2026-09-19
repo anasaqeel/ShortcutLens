@@ -2,20 +2,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "CheatSheet",
+    name: "ShortcutLens",
     platforms: [
         .macOS(.v13)
     ],
     targets: [
         .executableTarget(
-            name: "CheatSheet",
+            name: "ShortcutLens",
             resources: [
                 .process("Resources")
             ]
         ),
         .testTarget(
-            name: "CheatSheetTests",
-            dependencies: ["CheatSheet"]
+            name: "ShortcutLensTests",
+            dependencies: ["ShortcutLens"]
         )
     ]
 )

@@ -19,7 +19,7 @@ import CoreGraphics
 ///
 /// Heights are computed from the same metrics the SwiftUI view renders with,
 /// so the two stay in step; `Density` is the single source of truth.
-enum CheatSheetLayout {
+enum ShortcutLensLayout {
     /// What the sheet uses for any app whose menu bar fits in it — which is
     /// most of them — so the layout reads the same from app to app.
     static let columnCount = 4

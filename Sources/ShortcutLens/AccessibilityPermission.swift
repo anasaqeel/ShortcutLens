@@ -21,15 +21,15 @@ enum AccessibilityPermission {
         let alert = NSAlert()
         alert.messageText = "Accessibility Access Needed"
         alert.informativeText = """
-        CheatSheet reads the menu bar of the app you're using so it can show \
-        its keyboard shortcuts. To do that, macOS requires Accessibility \
-        permission.
+        Shortcut Lens reads the menu bar of the app you're using so it can \
+        show its keyboard shortcuts. To do that, macOS requires \
+        Accessibility permission.
 
-        CheatSheet only reads menu titles and key equivalents. It never \
+        Shortcut Lens only reads menu titles and key equivalents. It never \
         records keystrokes, controls other apps, or sends any data over \
         the network.
 
-        Click OK, then enable CheatSheet in the System Settings window \
+        Click OK, then enable Shortcut Lens in the System Settings window \
         that appears.
         """
         alert.addButton(withTitle: "OK")

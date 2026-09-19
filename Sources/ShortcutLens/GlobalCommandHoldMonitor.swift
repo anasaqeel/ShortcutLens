@@ -23,7 +23,7 @@ import AppKit
 /// else happens to be pumping the run loop (as in a unit test host).
 @MainActor
 final class GlobalCommandHoldMonitor {
-    /// How long Command must be held alone before the cheat sheet appears.
+    /// How long Command must be held alone before the shortcut sheet appears.
     var holdThreshold: TimeInterval = 2.0
 
     /// Called once Command has been held alone for `holdThreshold`, with the

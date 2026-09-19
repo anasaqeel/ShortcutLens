@@ -7,7 +7,7 @@ import AppKit
 /// This talks to a *foreign, untrusted process* over Mach IPC. Two defensive
 /// measures matter here beyond correctness:
 ///
-/// 1. **It must never hang the cheat sheet.** If the target app is busy,
+/// 1. **It must never hang the shortcut sheet.** If the target app is busy,
 ///    frozen, or intentionally slow-walking its AX tree, a synchronous
 ///    AXUIElement call can block indefinitely. We bound every round trip with
 ///    `AXUIElementSetMessagingTimeout` and additionally cap the whole read
@@ -22,7 +22,7 @@ enum MenuBarShortcutReader {
     /// Electron-based apps (VS Code, Slack, ...) build their accessibility
     /// tree lazily, and the first few queries after launch can take most of a
     /// second. Too small a value here silently turns every attribute read
-    /// into a failure, which shows up as an empty cheat sheet.
+    /// into a failure, which shows up as an empty shortcut sheet.
     private static let axCallTimeout: Float = 1.0
     /// Wall-clock budget for the whole read. `axCallTimeout` alone only
     /// bounds a single round trip; a menu tree with thousands of items in an
@@ -75,7 +75,7 @@ enum MenuBarShortcutReader {
                 continue
             }
             // The Apple menu is identical in every app and adds nothing
-            // useful to an app-specific cheat sheet.
+            // useful to an app-specific shortcut sheet.
             if title == "Apple" { continue }
             guard let submenuItems = copySubmenuItems(of: topMenu) else { continue }
             walk(items: submenuItems, menuPath: title, depth: 0, deadline: deadline, into: &entries)
@@ -111,7 +111,7 @@ enum MenuBarShortcutReader {
 
             // Deliberately *not* filtering on kAXEnabledAttribute: menu items
             // frequently report as disabled until their menu has actually been
-            // opened at least once, which would leave the cheat sheet nearly
+            // opened at least once, which would leave the shortcut sheet nearly
             // empty for most apps. A shortcut that's momentarily unavailable is
             // still worth showing — and skipping the check saves an AX round
             // trip per item.

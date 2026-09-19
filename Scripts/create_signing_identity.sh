@@ -1,6 +1,6 @@
 #!/bin/bash
 # Creates a self-signed code-signing identity in the login keychain, so
-# CheatSheet keeps a stable code identity across rebuilds.
+# Shortcut Lens keeps a stable code identity across rebuilds.
 #
 # Why this matters: with ad-hoc signing (`codesign --sign -`) macOS derives
 # the app's identity from a hash of the binary. Every rebuild therefore looks
@@ -12,7 +12,7 @@
 # software to anyone else; it only makes the local identity stable.
 set -euo pipefail
 
-IDENTITY_NAME="CheatSheet Local Signing"
+IDENTITY_NAME="Shortcut Lens Local Signing"
 KEYCHAIN="${HOME}/Library/Keychains/login.keychain-db"
 
 if security find-identity -v -p codesigning | grep -q "${IDENTITY_NAME}"; then
@@ -32,7 +32,7 @@ prompt             = no
 x509_extensions    = codesign
 
 [ dn ]
-CN = CheatSheet Local Signing
+CN = Shortcut Lens Local Signing
 
 [ codesign ]
 basicConstraints     = critical,CA:false

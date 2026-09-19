@@ -6,14 +6,14 @@ import SwiftUI
 /// user currently has selected in System Settings, with no manual theme
 /// switching logic required.
 ///
-/// Columns come pre-computed from ``CheatSheetLayout`` rather than being
+/// Columns come pre-computed from ``ShortcutLensLayout`` rather than being
 /// flowed by a `LazyVGrid`, because the window is sized to the layout: the
 /// two have to agree on the arrangement for everything to fit on screen
 /// without scrolling.
-struct CheatSheetView: View {
+struct ShortcutLensView: View {
     let appName: String
     let appIcon: NSImage?
-    let plan: CheatSheetLayout.Plan?
+    let plan: ShortcutLensLayout.Plan?
     let state: State
 
     enum State {
@@ -26,7 +26,7 @@ struct CheatSheetView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: CheatSheetLayout.Chrome.headerBottomSpacing) {
+        VStack(alignment: .leading, spacing: ShortcutLensLayout.Chrome.headerBottomSpacing) {
             header
 
             switch state {
@@ -39,7 +39,7 @@ struct CheatSheetView: View {
                     VStack(spacing: 10) {
                         Text("Accessibility access is needed")
                             .font(.title3.weight(.semibold))
-                        Text("Enable CheatSheet in System Settings \u{203A} Privacy & Security \u{203A} Accessibility, then relaunch it.")
+                        Text("Enable Shortcut Lens in System Settings \u{203A} Privacy & Security \u{203A} Accessibility, then relaunch it.")
                             .font(.body)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -64,7 +64,7 @@ struct CheatSheetView: View {
 
             Spacer(minLength: 0)
         }
-        .padding(CheatSheetLayout.Chrome.outerPadding)
+        .padding(ShortcutLensLayout.Chrome.outerPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -74,10 +74,10 @@ struct CheatSheetView: View {
         )
     }
 
-    private func columnsView(_ plan: CheatSheetLayout.Plan) -> some View {
-        HStack(alignment: .top, spacing: CheatSheetLayout.Chrome.columnSpacing) {
+    private func columnsView(_ plan: ShortcutLensLayout.Plan) -> some View {
+        HStack(alignment: .top, spacing: ShortcutLensLayout.Chrome.columnSpacing) {
             ForEach(Array(plan.columns.enumerated()), id: \.offset) { _, column in
-                VStack(alignment: .leading, spacing: CheatSheetLayout.Chrome.cardSpacing) {
+                VStack(alignment: .leading, spacing: ShortcutLensLayout.Chrome.cardSpacing) {
                     ForEach(column) { group in
                         GroupCard(group: group, density: plan.density)
                     }
@@ -113,13 +113,13 @@ struct CheatSheetView: View {
                 .font(.callout)
                 .foregroundStyle(.tertiary)
         }
-        .frame(height: CheatSheetLayout.Chrome.headerHeight)
+        .frame(height: ShortcutLensLayout.Chrome.headerHeight)
     }
 }
 
 private struct GroupCard: View {
     let group: ShortcutGroup
-    let density: CheatSheetLayout.Density
+    let density: ShortcutLensLayout.Density
 
     /// Builds the key combination as a single `Text`, interpolating SF
     /// Symbols for keys with no drawable character (Globe, mic). Because

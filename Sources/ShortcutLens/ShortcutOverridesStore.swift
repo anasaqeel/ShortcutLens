@@ -53,7 +53,7 @@ enum ShortcutOverridesStore {
         } catch {
             // A malformed bundled resource is a build-time bug, not a
             // runtime condition worth crashing over for the end user.
-            FileHandle.standardError.write(Data("CheatSheet: failed to load overrides.json: \(error)\n".utf8))
+            FileHandle.standardError.write(Data("Shortcut Lens: failed to load overrides.json: \(error)\n".utf8))
             return [:]
         }
     }

@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>CheatSheet</string>
+    <string>Shortcut Lens</string>
     <key>CFBundleDisplayName</key>
-    <string>CheatSheet</string>
+    <string>Shortcut Lens</string>
     <key>CFBundleIdentifier</key>
-    <string>com.aqeel.cheatsheet</string>
+    <string>com.anasaqeel.ShortcutLens</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>CFBundleShortVersionString</key>
@@ -15,7 +15,7 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleExecutable</key>
-    <string>CheatSheet</string>
+    <string>ShortcutLens</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
@@ -23,7 +23,7 @@
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.productivity</string>
     <!-- Agent app: no Dock icon, no app menu bar. Matches
-         NSApplication.setActivationPolicy(.accessory) in main.swift. -->
+         NSApplication.setActivationPolicy(.accessory) in ShortcutLensApp.swift. -->
     <key>LSUIElement</key>
     <true/>
     <key>NSHighResolutionCapable</key>

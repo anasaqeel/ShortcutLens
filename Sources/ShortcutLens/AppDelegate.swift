@@ -41,7 +41,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// launch, which defeats it. Two live copies means two global monitors
     /// racing to show two overlays, so bail out explicitly.
     private func terminateIfAlreadyRunning() -> Bool {
-        let myBundleID = Bundle.main.bundleIdentifier ?? "com.aqeel.cheatsheet"
+        let myBundleID = Bundle.main.bundleIdentifier ?? "com.anasaqeel.ShortcutLens"
         let others = NSWorkspace.shared.runningApplications.filter {
             $0.bundleIdentifier == myBundleID && $0.processIdentifier != ProcessInfo.processInfo.processIdentifier
         }
@@ -54,7 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         item.button?.image = NSImage(
             systemSymbolName: "command.square",
-            accessibilityDescription: "CheatSheet"
+            accessibilityDescription: "Shortcut Lens"
         )
 
         let menu = NSMenu()
@@ -79,7 +79,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.launchAtLoginItem = launchAtLoginItem
 
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Quit CheatSheet", action: #selector(quit), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: "Quit Shortcut Lens", action: #selector(quit), keyEquivalent: "q"))
 
         refreshMenuState()
         item.menu = menu

@@ -1,4 +1,8 @@
-# CheatSheet
+<p align="center">
+  <img src="docs/icon.png" width="128" alt="Shortcut Lens icon: a command symbol seen through a magnifying glass">
+</p>
+
+# Shortcut Lens
 
 Hold **⌘** for two seconds in any Mac app, and a sheet appears showing that
 app's keyboard shortcuts — read live from its own menu bar. Let go and it
@@ -33,14 +37,14 @@ yourself takes one command and means you can read what you're granting
 access to.
 
 ```sh
-git clone https://github.com/<your-username>/CheatSheet.git
-cd CheatSheet
+git clone https://github.com/anasaqeel/ShortcutLens.git
+cd ShortcutLens
 ./Scripts/create_signing_identity.sh   # once — see Signing below
 ./Scripts/build_app.sh --install       # builds and installs to /Applications
 ```
 
 Then open **System Settings → Privacy & Security → Accessibility**, add
-`/Applications/CheatSheet.app`, and switch it on. Relaunch the app
+`/Applications/Shortcut Lens.app`, and switch it on. Relaunch the app
 afterwards — macOS only tells a process about the permission at launch.
 
 A menu bar icon lets you re-check permission, toggle Launch at Login, or
@@ -69,12 +73,12 @@ The key never leaves your Mac.
 
 | Component | Responsibility |
 |---|---|
-| [`GlobalCommandHoldMonitor`](Sources/CheatSheet/GlobalCommandHoldMonitor.swift) | Detects "⌘ held alone for 2s" by *observing* events — it can't intercept or block them, so other apps' shortcuts are untouched. |
-| [`MenuBarShortcutReader`](Sources/CheatSheet/MenuBarShortcutReader.swift) | Walks the frontmost app's menu bar over the Accessibility API, with per-call and overall timeouts plus depth/count caps. |
-| [`KeyEquivalentFormatter`](Sources/CheatSheet/KeyEquivalentFormatter.swift) | Decodes the undocumented `AXMenuItemCmdModifiers` bitmask and turns key characters into the glyphs macOS itself draws. |
-| [`ShortcutOverridesStore`](Sources/CheatSheet/ShortcutOverridesStore.swift) | Merges a small bundled `overrides.json` for shortcuts that aren't exposed as menu items. |
-| [`CheatSheetLayout`](Sources/CheatSheet/CheatSheetLayout.swift) | Packs everything into a fixed-size four-column sheet, flowing menus across columns and stepping down through three text densities so it fits without scrolling. |
-| [`CheatSheetWindowController`](Sources/CheatSheet/CheatSheetWindowController.swift) | A borderless, non-activating panel that can never become key or steal focus. |
+| [`GlobalCommandHoldMonitor`](Sources/ShortcutLens/GlobalCommandHoldMonitor.swift) | Detects "⌘ held alone for 2s" by *observing* events — it can't intercept or block them, so other apps' shortcuts are untouched. |
+| [`MenuBarShortcutReader`](Sources/ShortcutLens/MenuBarShortcutReader.swift) | Walks the frontmost app's menu bar over the Accessibility API, with per-call and overall timeouts plus depth/count caps. |
+| [`KeyEquivalentFormatter`](Sources/ShortcutLens/KeyEquivalentFormatter.swift) | Decodes the undocumented `AXMenuItemCmdModifiers` bitmask and turns key characters into the glyphs macOS itself draws. |
+| [`ShortcutOverridesStore`](Sources/ShortcutLens/ShortcutOverridesStore.swift) | Merges a small bundled `overrides.json` for shortcuts that aren't exposed as menu items. |
+| [`ShortcutLensLayout`](Sources/ShortcutLens/ShortcutLensLayout.swift) | Packs everything into a fixed-size four-column sheet, flowing menus across columns and stepping down through three text densities so it fits without scrolling. |
+| [`ShortcutLensWindowController`](Sources/ShortcutLens/ShortcutLensWindowController.swift) | A borderless, non-activating panel that can never become key or steal focus. |
 
 Two details worth knowing if you're reading the code:
 
@@ -95,9 +99,10 @@ Two details worth knowing if you're reading the code:
 swift Scripts/make_icon.swift   # regenerate Resources/AppIcon.icns
 ```
 
-`run_tests.sh` wraps `swift test`, adding the framework and rpath flags
-swift-testing needs on machines that have the Command Line Tools but not
-full Xcode.
+`run_tests.sh` wraps `swift test`. With only the Command Line Tools
+installed, Swift 6.4 intermittently fails to find swift-testing's macro
+plugin on a clean build, so the script points the compiler at it
+explicitly; with full Xcode it's a plain `swift test`.
 
 The tests cover the pure logic: key formatting, the override merge rules,
 hold/cancel/release timing (using synthetic `NSEvent`s and an injected

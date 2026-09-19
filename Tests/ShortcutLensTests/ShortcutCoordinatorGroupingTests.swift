@@ -1,5 +1,5 @@
 import Testing
-@testable import CheatSheet
+@testable import ShortcutLens
 
 struct ShortcutCoordinatorGroupingTests {
     @Test func groupsEntriesByMenuPathPreservingFirstSeenOrder() {
