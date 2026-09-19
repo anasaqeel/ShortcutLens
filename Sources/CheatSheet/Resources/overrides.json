@@ -1,0 +1,13 @@
+{
+  "com.apple.Terminal": [
+    { "menuPath": "Window", "title": "Move focus to next pane", "keys": "⌘]" },
+    { "menuPath": "Window", "title": "Move focus to previous pane", "keys": "⌘[" }
+  ],
+  "com.apple.finder": [
+    { "menuPath": "Go", "title": "Quick Look", "keys": "Space" }
+  ],
+  "com.apple.dt.Xcode": [
+    { "menuPath": "Navigate", "title": "Open Quickly", "keys": "⇧⌘O" },
+    { "menuPath": "Editor", "title": "Jump to Definition", "keys": "⌃⌘J" }
+  ]
+}
