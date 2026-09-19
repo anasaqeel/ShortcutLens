@@ -8,6 +8,8 @@ Hold **⌘** for two seconds in any Mac app, and a sheet appears showing that
 app's keyboard shortcuts — read live from its own menu bar. Let go and it
 disappears.
 
+This is an attempt to bring back a beloved productivity tool **"CheatSheet"** that unfortunately got discontinued. This is a more polished version that still doesn't overcomplicate things and maintains the minimalistic design language with the same functionality that everyone loved.
+
 No configuration, no per-app setup, and nothing to maintain: the shortcuts
 come from whatever app you happen to be using, so it works with apps that
 didn't exist when this was written.
