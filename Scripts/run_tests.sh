@@ -1,23 +1,21 @@
 #!/bin/bash
 # Runs the test suite.
 #
-# On machines with only the Xcode Command Line Tools installed (no full
-# Xcode), swift-testing's framework and its interop dylib live outside the
-# default search paths, so they have to be pointed at explicitly. With full
-# Xcode installed, a plain `swift test` works too.
+# With only the Command Line Tools installed (no full Xcode), Swift 6.4's
+# build system doesn't reliably find swift-testing's macro plugin: roughly
+# every other clean build fails with "plugin for module 'TestingMacros' not
+# found", then succeeds on retry. Pointing the compiler at the plugin
+# directory explicitly makes it deterministic. Full Xcode resolves the plugin
+# itself and needs no flags.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-CLT_FRAMEWORKS="/Library/Developer/CommandLineTools/Library/Developer/Frameworks"
-CLT_LIB="/Library/Developer/CommandLineTools/Library/Developer/usr/lib"
+DEVELOPER_DIR_PATH="$(xcode-select -p 2>/dev/null || true)"
+PLUGIN_DIR="${DEVELOPER_DIR_PATH}/usr/lib/swift/host/plugins/testing"
 
-if [ -d "${CLT_FRAMEWORKS}/Testing.framework" ]; then
-    swift test \
-        -Xswiftc -F -Xswiftc "${CLT_FRAMEWORKS}" \
-        -Xlinker -rpath -Xlinker "${CLT_FRAMEWORKS}" \
-        -Xlinker -rpath -Xlinker "${CLT_LIB}" \
-        "$@"
-else
-    swift test "$@"
+if [[ "${DEVELOPER_DIR_PATH}" == *CommandLineTools* && -d "${PLUGIN_DIR}" ]]; then
+    exec swift test -Xswiftc -plugin-path -Xswiftc "${PLUGIN_DIR}" "$@"
 fi
+
+exec swift test "$@"

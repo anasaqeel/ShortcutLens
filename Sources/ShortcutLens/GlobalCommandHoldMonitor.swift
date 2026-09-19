@@ -38,6 +38,14 @@ final class GlobalCommandHoldMonitor {
     /// process.
     var frontmostAppProvider: () -> NSRunningApplication? = { NSWorkspace.shared.frontmostApplication }
 
+    /// The *physical* Command key state, read by the stuck-key watchdog.
+    /// Injectable because in a test process no key is ever really held, so
+    /// the real value would make the watchdog "rescue" every gesture.
+    var isCommandPhysicallyDown: () -> Bool = { NSEvent.modifierFlags.contains(.command) }
+
+    /// How often the watchdog re-checks the physical key while the sheet is up.
+    var watchdogInterval: Duration = .milliseconds(250)
+
     private var globalMonitor: Any?
     private var localMonitor: Any?
     private var isCommandDown = false
@@ -136,11 +144,12 @@ final class GlobalCommandHoldMonitor {
     /// held any more.
     private func startStuckKeyWatchdog() {
         stuckKeyWatchdog?.cancel()
+        let interval = watchdogInterval
         stuckKeyWatchdog = Task { [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(for: .milliseconds(250))
+                try? await Task.sleep(for: interval)
                 guard let self, !Task.isCancelled, self.isCommandDown else { return }
-                if !NSEvent.modifierFlags.contains(.command) {
+                if !self.isCommandPhysicallyDown() {
                     self.releaseCommand()
                     return
                 }
