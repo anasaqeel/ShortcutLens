@@ -24,17 +24,89 @@ didn't exist when this was written.
 
 ## Requirements
 
-- macOS 13 (Ventura) or later, Apple Silicon or Intel
-- Xcode Command Line Tools — `xcode-select --install`
+- macOS 13 (Ventura) or later
+- An Apple Silicon or Intel Mac
 
-## Install
+## Installation
 
-There is no prebuilt download. Distributing a Mac app so that it opens
-without Gatekeeper warnings requires an Apple Developer ID certificate and
-notarization, and shipping an *unnotarized* app that asks for Accessibility
-access is exactly the pattern you should be suspicious of. Building it
-yourself takes one command and means you can read what you're granting
-access to.
+There are **two ways** to install Shortcut Lens:
+
+1. **[Download the app](#option-1-download-the-app-recommended)** — the
+   easiest way, and no technical knowledge is needed. Recommended for most
+   people.
+2. **[Build it from source](#option-2-build-from-source)** — for developers,
+   or anyone who'd rather compile the app themselves.
+
+### Option 1: Download the app (recommended)
+
+**Step 1 — Download.** Go to the
+[latest release](https://github.com/anasaqeel/ShortcutLens/releases/latest)
+and download the file named `ShortcutLens-` followed by a version number and
+`.dmg`.
+
+**Step 2 — Install.** Double-click the downloaded file. In the window that
+opens, drag **Shortcut Lens** onto the **Applications** folder. You can then
+close that window and eject the disk image (click ⏏ next to "Shortcut Lens"
+in the Finder sidebar).
+
+> Don't open the app from inside that window — it needs to be in your
+> Applications folder to work properly. If you do open it from there, it
+> will remind you to move it first.
+
+**Step 3 — Allow it to open.** Open your **Applications** folder and
+double-click **Shortcut Lens**. The first time, macOS will stop it with a
+message saying it can't verify the app. That's expected (see
+[why](#why-does-macos-warn-about-it) below). Click **Done** or **OK** — *not*
+"Move to Trash" — and then:
+
+1. Open **System Settings** and choose **Privacy & Security**.
+2. Scroll down to the **Security** section. You'll see a message saying
+   Shortcut Lens was blocked.
+3. Click **Open Anyway**, enter your Mac's password if asked, and confirm
+   with **Open Anyway** once more.
+
+You only need to do this once. (The exact wording differs slightly between
+macOS versions.)
+
+**Step 4 — Let it read menus.** Shortcut Lens will explain that it needs
+*Accessibility* access to read other apps' menus. Click **OK**, and in the
+System Settings window that opens, switch **Shortcut Lens** on. Then quit it
+— click the ⌘ icon in your menu bar and choose **Quit Shortcut Lens** — and
+open it again from Applications.
+
+**Step 5 — Try it.** Switch to any app and hold down the **⌘ Command** key
+for two seconds. Let go to close the sheet.
+
+To have it start automatically, click the ⌘ icon in the menu bar and choose
+**Launch at Login**.
+
+#### Why does macOS warn about it?
+
+macOS shows this warning for any app that hasn't been *notarized* — checked
+and approved by Apple — which requires a paid Apple Developer membership.
+The warning isn't a sign that anything is wrong with Shortcut Lens, but it is
+a good reminder to be careful where apps come from:
+
+- Only download Shortcut Lens from this project's
+  [Releases page](https://github.com/anasaqeel/ShortcutLens/releases).
+- The app never connects to the internet, and all of its code is here for
+  anyone to read.
+- Each release lists a SHA-256 checksum. If you're comfortable with
+  Terminal, you can check your download matches it:
+  `shasum -a 256 ~/Downloads/ShortcutLens-*.dmg`
+
+#### Updating
+
+Download the new version and drag it into Applications, choosing
+**Replace** when asked. Because each release is a different build, macOS
+will treat it as a new app: repeat Step 3, then in **System Settings →
+Privacy & Security → Accessibility** switch Shortcut Lens off and on again.
+If it still doesn't work, select it, remove it with the **−** button, and
+add it again with **+**.
+
+### Option 2: Build from source
+
+You'll need the Xcode Command Line Tools (`xcode-select --install`).
 
 ```sh
 git clone https://github.com/anasaqeel/ShortcutLens.git
@@ -50,7 +122,7 @@ afterwards — macOS only tells a process about the permission at launch.
 A menu bar icon lets you re-check permission, toggle Launch at Login, or
 quit.
 
-### Signing
+#### Signing
 
 `create_signing_identity.sh` creates a self-signed code-signing certificate
 in your login keychain and the build signs with it. This is not about
@@ -115,6 +187,27 @@ Accessibility permission and a GUI session, so verify those by hand:
 3. Press ⌘C quickly — the sheet must *not* appear, and copy must still work.
 4. Switch between Light and Dark Mode and check the sheet follows.
 
+### Publishing a release
+
+```sh
+./Scripts/make_dmg.sh    # -> dist/ShortcutLens-<version>.dmg and .sha256
+```
+
+This builds a universal (Apple Silicon + Intel) binary, ad-hoc signs it, and
+packages it in a disk image alongside a shortcut to Applications. The
+version comes from `CFBundleShortVersionString` in `Resources/Info.plist`,
+so bump that (and `CFBundleVersion`) first.
+
+Release builds are deliberately *not* signed with the local certificate
+from `create_signing_identity.sh`: that certificate is trusted only on your
+own Mac, so it wouldn't get past Gatekeeper anywhere else either, and it
+would tie every release to one machine. Ad-hoc signing is reproducible by
+anyone.
+
+Then on GitHub, open **Releases → Draft a new release**, create a tag
+`v<version>`, attach both the `.dmg` and the `.sha256` file, and paste the
+checksum into the release notes.
+
 ## Privacy and security
 
 - **Read-only.** The app only reads Accessibility data (menu titles and key
@@ -139,8 +232,10 @@ Accessibility permission and a GUI session, so verify those by hand:
   added to `overrides.json`.
 - On a laptop display, apps with very large menu bars (Xcode) still need to
   scroll; the layout widens to six columns before that happens.
-- The signing certificate is local and self-signed. Sharing the built app
-  with other people would need a Developer ID certificate and notarization.
+- Downloads aren't notarized — that needs a paid Apple Developer ID — so
+  macOS blocks the app the first time it's opened until you choose
+  **Open Anyway** (see [Option 1](#option-1-download-the-app-recommended)),
+  and each update needs its Accessibility permission re-enabled.
 
 ## License
 

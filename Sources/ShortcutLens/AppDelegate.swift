@@ -12,6 +12,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         guard !terminateIfAlreadyRunning() else { return }
 
+        if InstallLocation.refuseToRunFromTemporaryLocation() {
+            NSApp.terminate(nil)
+            return
+        }
+
         // Agent apps (LSUIElement) don't get a Dock icon or app menu, so the
         // status item is the only UI surface — make sure it's there before
         // anything else.

@@ -3,22 +3,55 @@
 # "Shortcut Lens.app" bundle: an .app is what LSUIElement, Accessibility
 # permission prompts, and "Launch at Login" all expect to see, rather than a
 # bare command-line binary.
+#
+#   ./Scripts/build_app.sh             build for this Mac, into dist/
+#   ./Scripts/build_app.sh --install   ...and install into /Applications
+#   ./Scripts/build_app.sh --release   build for distribution (see below);
+#                                      used by make_dmg.sh
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
+
+INSTALL=false
+RELEASE=false
+for arg in "$@"; do
+    case "${arg}" in
+        --install) INSTALL=true ;;
+        --release) RELEASE=true ;;
+        *) echo "Unknown option: ${arg}" >&2; exit 64 ;;
+    esac
+done
+
+if ${INSTALL} && ${RELEASE}; then
+    echo "--release builds are for other people's Macs and are ad-hoc signed," >&2
+    echo "so installing one here would lose your stable Accessibility grant." >&2
+    echo "Use --install on its own for this Mac." >&2
+    exit 64
+fi
 
 # The bundle carries the user-facing name; the executable and Swift module
 # can't contain a space, so they use the compact form.
 APP_NAME="Shortcut Lens"
 EXECUTABLE="ShortcutLens"
-BUILD_DIR=".build/release"
 APP_BUNDLE="dist/${APP_NAME}.app"
 
+if ${RELEASE}; then
+    # Universal, so the download also runs on Intel Macs.
+    BUILD_FLAGS=(-c release --arch arm64 --arch x86_64)
+else
+    BUILD_FLAGS=(-c release)
+fi
+
 echo "==> Building release binary"
-swift build -c release
+swift build "${BUILD_FLAGS[@]}"
+# Ask SwiftPM where it put the products: single- and multi-architecture
+# builds use different output directories.
+BUILD_DIR="$(swift build "${BUILD_FLAGS[@]}" --show-bin-path)"
 
 echo "==> Assembling ${APP_BUNDLE}"
-rm -rf "dist"
+# Replace only the app bundle: dist/ also holds release disk images from
+# make_dmg.sh, which an ordinary rebuild shouldn't wipe out.
+rm -rf "${APP_BUNDLE}"
 mkdir -p "${APP_BUNDLE}/Contents/MacOS"
 mkdir -p "${APP_BUNDLE}/Contents/Resources"
 
@@ -43,7 +76,15 @@ fi
 # granted all over again. A fixed certificate keeps that grant working.
 SIGNING_IDENTITY="Shortcut Lens Local Signing"
 
-if security find-identity -v -p codesigning | grep -q "${SIGNING_IDENTITY}"; then
+if ${RELEASE}; then
+    # Distribution builds are ad-hoc signed on purpose. The local certificate
+    # is only trusted on the maintainer's Mac, so it wouldn't get past
+    # Gatekeeper anywhere else either — it would just tie every release to
+    # one machine. Ad-hoc is reproducible by anyone. (A Developer ID
+    # certificate plus notarization is what removes the Gatekeeper warning.)
+    echo "==> Ad-hoc code signing for distribution"
+    codesign --force --deep --options runtime --sign - "${APP_BUNDLE}"
+elif security find-identity -v -p codesigning | grep -q "${SIGNING_IDENTITY}"; then
     echo "==> Code signing as '${SIGNING_IDENTITY}'"
     codesign --force --deep --options runtime --sign "${SIGNING_IDENTITY}" "${APP_BUNDLE}"
 else
@@ -63,7 +104,7 @@ fi
 INSTALLED="/Applications/${APP_NAME}.app"
 RUNNING_PATTERN="${APP_NAME}.app/Contents/MacOS/${EXECUTABLE}"
 
-if [ "${1:-}" = "--install" ]; then
+if ${INSTALL}; then
     echo "==> Installing to ${INSTALLED}"
     if pgrep -f "${RUNNING_PATTERN}" >/dev/null; then
         echo "    (quitting the running copy first)"
@@ -77,12 +118,13 @@ if [ "${1:-}" = "--install" ]; then
     # Launch by full path: 'open -a' can resolve to a stale LaunchServices
     # registration pointing back at dist/.
     echo "    Launch it with: open \"${INSTALLED}\""
+elif ${RELEASE}; then
+    echo "==> Done: ${APP_BUNDLE} (universal, ad-hoc signed)"
 else
     echo "==> Done: ${APP_BUNDLE}"
     echo "    Run './Scripts/build_app.sh --install' to install into /Applications."
     echo "    Running it straight from dist/ triggers App Translocation, which"
     echo "    makes Accessibility permission fail to stick."
+    echo "    Note: this signature is only valid on this Mac. To share the app,"
+    echo "    use ./Scripts/make_dmg.sh instead."
 fi
-
-echo "    Note: this signature is only valid on this Mac. Sharing the app with"
-echo "    anyone else needs a Developer ID certificate and notarization."
